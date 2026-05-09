@@ -4,85 +4,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Candy's Handy Tools</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
-    --bg: #0f172a;
-    --bg2: #1e293b;
-    --card: #ffffff;
-    --text: #0f172a;
-    --muted: #64748b;
-    --primary: #6366f1;
-    --primary-hover: #4f46e5;
-    --accent: #f59e0b;
-    --success: #10b981;
-    --danger: #ef4444;
-    --border: #e2e8f0;
-    --shadow: 0 10px 40px rgba(0,0,0,0.08);
-    --radius: 16px;
+    --cream: #FFF8E7;
+    --paper: #FFFEF7;
+    --ink: #2D2A26;
+    --muted: #8B7355;
+    --primary: #FF6B6B;
+    --peach: #FFB4A2;
+    --mint: #B5EAD7;
+    --butter: #FFE066;
+    --lavender: #C7CEEA;
+    --sky: #A0E7E5;
+    --pink: #FFAFCC;
+    --shadow: 5px 5px 0 var(--ink);
+    --shadow-sm: 3px 3px 0 var(--ink);
   }
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
-                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: "Nunito", -apple-system, BlinkMacSystemFont,
+                 "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: var(--cream);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(45,42,38,0.13) 1px, transparent 0);
+    background-size: 26px 26px;
     min-height: 100vh;
-    color: var(--text);
-    padding: 40px 20px;
+    color: var(--ink);
+    padding: 50px 20px;
     line-height: 1.6;
+    font-weight: 600;
   }
   .container { max-width: 1100px; margin: 0 auto; }
+
+  /* Header */
   header {
     text-align: center;
-    color: white;
-    margin-bottom: 50px;
+    margin-bottom: 60px;
+    position: relative;
   }
   header h1 {
-    font-size: 2.8rem;
-    margin-bottom: 10px;
-    text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    font-family: "Patrick Hand", cursive;
+    font-size: 4.2rem;
+    color: var(--ink);
+    margin-bottom: 8px;
+    transform: rotate(-1.2deg);
+    display: inline-block;
+    line-height: 1.1;
   }
-  header p { font-size: 1.1rem; opacity: 0.9; }
+  header p {
+    font-family: "Caveat", cursive;
+    font-size: 1.7rem;
+    color: var(--muted);
+    transform: rotate(0.6deg);
+    display: inline-block;
+    font-weight: 500;
+  }
 
   /* Grid of tool cards */
   .tools-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 36px;
+    padding: 16px;
     margin-bottom: 30px;
   }
   .tool-card {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 28px 24px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 38px 24px 28px;
     cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.18s, box-shadow 0.18s;
     box-shadow: var(--shadow);
-    border: 2px solid transparent;
+    position: relative;
+    text-align: center;
   }
+  .tool-card:nth-child(1) { background: #FFF0F0; transform: rotate(-1.2deg); }
+  .tool-card:nth-child(2) { background: #F0FFF4; transform: rotate(0.9deg); }
+  .tool-card:nth-child(3) { background: #FFF9E6; transform: rotate(-0.6deg); }
+  .tool-card:nth-child(4) { background: #F0F8FF; transform: rotate(1.4deg); }
+  .tool-card:nth-child(5) { background: #FFF0FA; transform: rotate(-1deg); }
+
+  /* Washi tape on top of cards */
+  .tool-card::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-3deg);
+    width: 80px;
+    height: 24px;
+    background: rgba(255, 224, 102, 0.75);
+    border: 1px dashed rgba(0,0,0,0.18);
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.08);
+  }
+  .tool-card:nth-child(2)::before { background: rgba(255, 175, 204, 0.75); }
+  .tool-card:nth-child(3)::before { background: rgba(160, 231, 229, 0.75); transform: translateX(-50%) rotate(2deg); }
+  .tool-card:nth-child(4)::before { background: rgba(199, 206, 234, 0.85); transform: translateX(-50%) rotate(-2deg); }
+  .tool-card:nth-child(5)::before { background: rgba(181, 234, 215, 0.85); transform: translateX(-50%) rotate(4deg); }
+
   .tool-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-    border-color: var(--primary);
+    transform: rotate(0deg) translate(-2px, -2px);
+    box-shadow: 8px 8px 0 var(--ink);
   }
   .tool-icon {
-    font-size: 2.5rem;
-    margin-bottom: 12px;
+    font-size: 3rem;
+    margin-bottom: 14px;
+    display: block;
   }
   .tool-card h3 {
-    font-size: 1.25rem;
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.7rem;
     margin-bottom: 8px;
-    color: var(--text);
+    color: var(--ink);
+    font-weight: normal;
   }
   .tool-card p {
     color: var(--muted);
     font-size: 0.95rem;
+    font-weight: 600;
   }
 
   /* Tool detail panel */
   .tool-panel {
-    background: var(--card);
-    border-radius: var(--radius);
-    padding: 32px;
+    background: var(--paper);
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 36px;
     box-shadow: var(--shadow);
     display: none;
   }
@@ -91,184 +142,233 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
     padding-bottom: 20px;
-    border-bottom: 1px solid var(--border);
+    border-bottom: 3px dashed var(--ink);
   }
-  .panel-title { display: flex; align-items: center; gap: 12px; }
-  .panel-title .icon { font-size: 2rem; }
-  .panel-title h2 { font-size: 1.6rem; }
+  .panel-title { display: flex; align-items: center; gap: 14px; }
+  .panel-title .icon { font-size: 2.4rem; }
+  .panel-title h2 {
+    font-family: "Patrick Hand", cursive;
+    font-size: 2.2rem;
+    font-weight: normal;
+  }
   .back-btn {
-    background: var(--bg2);
-    color: white;
-    border: none;
+    background: var(--butter);
+    color: var(--ink);
+    border: 2.5px solid var(--ink);
     padding: 10px 18px;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    font-size: 0.95rem;
-    transition: background 0.2s;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.1s, box-shadow 0.1s;
   }
-  .back-btn:hover { background: var(--bg); }
+  .back-btn:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .back-btn:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
 
   /* Forms */
   .form-row {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin-bottom: 18px;
+    margin-bottom: 22px;
   }
   .form-row label {
-    font-weight: 600;
-    color: var(--text);
-    font-size: 0.95rem;
+    color: var(--ink);
+    font-family: "Patrick Hand", cursive;
+    font-size: 1.3rem;
+    font-weight: normal;
   }
   .form-row input,
   .form-row select,
   .form-row textarea {
     padding: 12px 14px;
-    border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border: 2.5px solid var(--ink);
+    border-radius: 10px;
     font-size: 1rem;
     font-family: inherit;
-    transition: border-color 0.2s;
+    font-weight: 600;
     background: white;
+    transition: transform 0.1s, box-shadow 0.1s;
+    color: var(--ink);
   }
   .form-row input:focus,
   .form-row select:focus,
   .form-row textarea:focus {
     outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    box-shadow: var(--shadow-sm);
+    transform: translate(-1px,-1px);
   }
   .form-row .hint {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: var(--muted);
+    font-family: "Caveat", cursive;
+    font-size: 1.1rem;
   }
   .radio-group {
     display: flex;
-    gap: 16px;
+    gap: 18px;
     flex-wrap: wrap;
   }
   .radio-group label {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-weight: normal;
+    font-weight: 700;
+    font-family: "Nunito", sans-serif;
+    font-size: 1rem;
     cursor: pointer;
   }
+  .radio-group input[type="radio"] { width: 18px; height: 18px; accent-color: var(--primary); }
   .lang-row {
     display: flex;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: wrap;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
   }
   .lang-btn {
-    padding: 8px 16px;
-    border: 1.5px solid var(--border);
-    background: white;
-    border-radius: 20px;
+    padding: 8px 18px;
+    border: 2.5px solid var(--ink);
+    background: var(--paper);
+    border-radius: 999px;
     cursor: pointer;
-    font-size: 0.9rem;
-    transition: all 0.2s;
+    font-size: 0.95rem;
+    font-weight: 700;
+    font-family: inherit;
+    color: var(--ink);
+    transition: all 0.1s;
   }
-  .lang-btn:hover { border-color: var(--primary); }
+  .lang-btn:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink); }
   .lang-btn.active {
-    background: var(--primary);
-    color: white;
-    border-color: var(--primary);
+    background: var(--butter);
+    box-shadow: var(--shadow-sm);
   }
   .btn-primary {
     background: var(--primary);
     color: white;
-    border: none;
-    padding: 12px 28px;
-    border-radius: 8px;
+    border: 2.5px solid var(--ink);
+    padding: 14px 32px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-family: inherit;
+    box-shadow: var(--shadow);
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .btn-primary:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--ink); }
+  .btn-primary:active { transform: translate(3px,3px); box-shadow: 2px 2px 0 var(--ink); }
+  .btn-secondary {
+    background: var(--mint);
+    color: var(--ink);
+    border: 2.5px solid var(--ink);
+    padding: 12px 22px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 1rem;
-    font-weight: 600;
-    transition: background 0.2s;
+    font-weight: 700;
+    font-family: inherit;
+    box-shadow: var(--shadow-sm);
+    transition: transform 0.1s, box-shadow 0.1s;
   }
-  .btn-primary:hover { background: var(--primary-hover); }
-  .btn-secondary {
-    background: white;
-    color: var(--primary);
-    border: 1.5px solid var(--primary);
-    padding: 10px 18px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 0.95rem;
-    transition: all 0.2s;
-  }
-  .btn-secondary:hover { background: var(--primary); color: white; }
-  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn-secondary:hover { transform: translate(-1px,-1px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn-secondary:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--ink); }
+  .btn-row { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
 
   /* Output area */
   .output {
-    margin-top: 24px;
-    padding: 20px;
-    background: #f8fafc;
-    border-left: 4px solid var(--primary);
-    border-radius: 8px;
+    margin-top: 28px;
+    padding: 22px;
+    background: #FFFEF7;
+    border: 2.5px dashed var(--ink);
+    border-radius: 14px;
     white-space: pre-wrap;
     word-break: break-word;
-    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-    font-size: 0.95rem;
+    font-family: "Nunito", sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
     min-height: 60px;
-    color: var(--text);
+    color: var(--ink);
     display: none;
+    line-height: 1.7;
   }
   .output.active { display: block; }
-  .output.success { border-color: var(--success); }
-  .output.error { border-color: var(--danger); color: var(--danger); }
+  .output.success { background: #F0FFF4; border-color: #2D5F3F; }
+  .output.error { background: #FFF0F0; border-color: var(--primary); color: #B91C1C; }
   .output .big {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--primary);
+    font-family: "Patrick Hand", cursive;
+    font-size: 2rem;
+    font-weight: normal;
+    color: var(--ink);
     display: block;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    line-height: 1.3;
   }
   .output .tag {
     display: inline-block;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 0.85rem;
+    padding: 3px 14px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    font-size: 0.95rem;
     margin-left: 8px;
-    color: white;
+    font-weight: 700;
+    color: var(--ink);
+    font-family: "Nunito", sans-serif;
   }
-  .tag.underweight { background: #38bdf8; }
-  .tag.normal { background: var(--success); }
-  .tag.overweight { background: var(--accent); }
-  .tag.obese { background: var(--danger); }
+  .tag.underweight { background: var(--sky); }
+  .tag.normal { background: var(--mint); }
+  .tag.overweight { background: var(--butter); }
+  .tag.obese { background: var(--peach); }
   .copy-btn {
     margin-left: 12px;
-    padding: 4px 10px;
-    background: var(--bg2);
-    color: white;
-    border: none;
-    border-radius: 6px;
+    padding: 5px 14px;
+    background: var(--butter);
+    color: var(--ink);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
     cursor: pointer;
-    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: inherit;
+    font-size: 0.9rem;
+    box-shadow: 2px 2px 0 var(--ink);
+    transition: transform 0.1s, box-shadow 0.1s;
   }
+  .copy-btn:hover { transform: translate(-1px,-1px); box-shadow: 3px 3px 0 var(--ink); }
+  .copy-btn:active { transform: translate(1px,1px); box-shadow: 1px 1px 0 var(--ink); }
   .password-display {
+    font-family: "Courier New", ui-monospace, monospace;
     font-size: 1.4rem;
     font-weight: bold;
-    color: var(--primary);
+    color: var(--ink);
     letter-spacing: 1px;
     word-break: break-all;
+    background: var(--butter);
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 2.5px solid var(--ink);
+    display: inline-block;
   }
 
   footer {
     text-align: center;
-    color: rgba(255,255,255,0.8);
-    margin-top: 40px;
-    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 60px;
+    font-family: "Caveat", cursive;
+    font-size: 1.4rem;
+    font-weight: 500;
   }
-  footer a { color: white; }
+  footer a { color: var(--ink); }
 
   @media (max-width: 600px) {
-    header h1 { font-size: 2rem; }
-    .tool-panel { padding: 20px; }
+    header h1 { font-size: 2.8rem; }
+    header p { font-size: 1.3rem; }
+    .tool-panel { padding: 22px; }
     .panel-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+    .panel-title h2 { font-size: 1.8rem; }
+    .tools-grid { gap: 28px; }
   }
 </style>
 </head>

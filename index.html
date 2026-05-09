@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Camp · 工具集合 / Toolkit</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0f172a;
+    --bg2: #1e293b;
+    --card: #ffffff;
+    --text: #0f172a;
+    --muted: #64748b;
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --accent: #f59e0b;
+    --success: #10b981;
+    --danger: #ef4444;
+    --border: #e2e8f0;
+    --shadow: 0 10px 40px rgba(0,0,0,0.08);
+    --radius: 16px;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--text);
+    padding: 40px 20px;
+    line-height: 1.6;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  header {
+    text-align: center;
+    color: white;
+    margin-bottom: 50px;
+  }
+  header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 10px;
+    text-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  header p { font-size: 1.1rem; opacity: 0.9; }
+
+  /* Grid of tool cards */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+  .tool-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: var(--shadow);
+    border: 2px solid transparent;
+  }
+  .tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    border-color: var(--primary);
+  }
+  .tool-icon {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+  }
+  .tool-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+    color: var(--text);
+  }
+  .tool-card p {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  /* Tool detail panel */
+  .tool-panel {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 32px;
+    box-shadow: var(--shadow);
+    display: none;
+  }
+  .tool-panel.active { display: block; }
+  .panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title { display: flex; align-items: center; gap: 12px; }
+  .panel-title .icon { font-size: 2rem; }
+  .panel-title h2 { font-size: 1.6rem; }
+  .back-btn {
+    background: var(--bg2);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.2s;
+  }
+  .back-btn:hover { background: var(--bg); }
+
+  /* Forms */
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .form-row label {
+    font-weight: 600;
+    color: var(--text);
+    font-size: 0.95rem;
+  }
+  .form-row input,
+  .form-row select,
+  .form-row textarea {
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    background: white;
+  }
+  .form-row input:focus,
+  .form-row select:focus,
+  .form-row textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+  }
+  .form-row .hint {
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .radio-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: normal;
+    cursor: pointer;
+  }
+  .lang-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .lang-btn {
+    padding: 8px 16px;
+    border: 1.5px solid var(--border);
+    background: white;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+  }
+  .lang-btn:hover { border-color: var(--primary); }
+  .lang-btn.active {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: background 0.2s;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+  .btn-secondary {
+    background: white;
+    color: var(--primary);
+    border: 1.5px solid var(--primary);
+    padding: 10px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+  }
+  .btn-secondary:hover { background: var(--primary); color: white; }
+  .btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+
+  /* Output area */
+  .output {
+    margin-top: 24px;
+    padding: 20px;
+    background: #f8fafc;
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: 0.95rem;
+    min-height: 60px;
+    color: var(--text);
+    display: none;
+  }
+  .output.active { display: block; }
+  .output.success { border-color: var(--success); }
+  .output.error { border-color: var(--danger); color: var(--danger); }
+  .output .big {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--primary);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .output .tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    margin-left: 8px;
+    color: white;
+  }
+  .tag.underweight { background: #38bdf8; }
+  .tag.normal { background: var(--success); }
+  .tag.overweight { background: var(--accent); }
+  .tag.obese { background: var(--danger); }
+  .copy-btn {
+    margin-left: 12px;
+    padding: 4px 10px;
+    background: var(--bg2);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+  .password-display {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--primary);
+    letter-spacing: 1px;
+    word-break: break-all;
+  }
+
+  footer {
+    text-align: center;
+    color: rgba(255,255,255,0.8);
+    margin-top: 40px;
+    font-size: 0.9rem;
+  }
+  footer a { color: white; }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 2rem; }
+    .tool-panel { padding: 20px; }
+    .panel-header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🧰 Claude Camp Toolkit</h1>
+    <p>5 个实用小工具 · 5 Useful Tools · 5つの便利ツール · 5 Outils Pratiques</p>
+  </header>
+
+  <!-- HOME: Tool grid -->
+  <div id="home" class="tools-grid">
+    <div class="tool-card" onclick="openTool('bmi')">
+      <div class="tool-icon">⚖️</div>
+      <h3>BMI Calculator</h3>
+      <p>计算 BMI 并获得个性化健康建议（4 语言）</p>
+    </div>
+    <div class="tool-card" onclick="openTool('greeting')">
+      <div class="tool-icon">👋</div>
+      <h3>Personalized Greetings</h3>
+      <p>根据名字和年龄生成走心问候语</p>
+    </div>
+    <div class="tool-card" onclick="openTool('password')">
+      <div class="tool-icon">🔐</div>
+      <h3>Password Generator</h3>
+      <p>生成安全的随机密码</p>
+    </div>
+    <div class="tool-card" onclick="openTool('temp')">
+      <div class="tool-icon">🌡️</div>
+      <h3>Temperature Converter</h3>
+      <p>摄氏 / 华氏温度互换</p>
+    </div>
+    <div class="tool-card" onclick="openTool('tip')">
+      <div class="tool-icon">💵</div>
+      <h3>Tip Calculator</h3>
+      <p>多道菜小费 & 账单计算</p>
+    </div>
+  </div>
+
+  <!-- BMI -->
+  <div id="bmi" class="tool-panel">
+    <div class="panel-header">
+      <div class="panel-title"><span class="icon">⚖️</span><h2>BMI Calculator</h2></div>
+      <button class="back-btn" onclick="backHome()">← Back</button>
+    </div>
+    <div class="lang-row" id="bmi-langs"></div>
+    <div class="form-row">
+      <label data-i18n="enter_height">身高 (cm)</label>
+      <input type="number" id="bmi-height" min="50" max="250" step="0.1" placeholder="170">
+    </div>
+    <div class="form-row">
+      <label data-i18n="enter_weight">体重 (kg)</label>
+      <input type="number" id="bmi-weight" min="10" max="300" step="0.1" placeholder="65">
+    </div>
+    <div class="form-row">
+      <label data-i18n="enter_age">年龄</label>
+      <input type="number" id="bmi-age" min="1" max="120" placeholder="28">
+    </div>
+    <div class="form-row">
+      <label data-i18n="enter_gender">性别</label>
+      <div class="radio-group">
+        <label><input type="radio" name="bmi-gender" value="male" checked> <span class="g-male">男 / Male</span></label>
+        <label><input type="radio" name="bmi-gender" value="female"> <span class="g-female">女 / Female</span></label>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="calcBMI()">计算 / Calculate</button>
+    <div class="output" id="bmi-output"></div>
+  </div>
+
+  <!-- Greeting -->
+  <div id="greeting" class="tool-panel">
+    <div class="panel-header">
+      <div class="panel-title"><span class="icon">👋</span><h2>Personalized Greetings</h2></div>
+      <button class="back-btn" onclick="backHome()">← Back</button>
+    </div>
+    <div class="lang-row" id="greet-langs"></div>
+    <div class="form-row">
+      <label id="greet-name-label">名字 / Name</label>
+      <input type="text" id="greet-name" placeholder="Your name">
+    </div>
+    <div class="form-row">
+      <label id="greet-age-label">年龄 / Age</label>
+      <input type="number" id="greet-age" min="0" max="150" placeholder="25">
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="generateGreeting()">生成问候 / Greet me</button>
+      <button class="btn-secondary" onclick="generateGreeting()">🎲 再来一次 / Re-roll</button>
+    </div>
+    <div class="output" id="greet-output"></div>
+  </div>
+
+  <!-- Password -->
+  <div id="password" class="tool-panel">
+    <div class="panel-header">
+      <div class="panel-title"><span class="icon">🔐</span><h2>Password Generator</h2></div>
+      <button class="back-btn" onclick="backHome()">← Back</button>
+    </div>
+    <div class="form-row">
+      <label>密码长度 / Password length</label>
+      <input type="number" id="pw-length" min="5" max="128" value="12">
+      <span class="hint">最少 5 位 · Minimum 5 characters</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn-primary" onclick="genPassword()">生成 / Generate</button>
+      <button class="btn-secondary" onclick="genPassword()">🎲 再来 / Re-roll</button>
+    </div>
+    <div class="output" id="pw-output"></div>
+  </div>
+
+  <!-- Temperature -->
+  <div id="temp" class="tool-panel">
+    <div class="panel-header">
+      <div class="panel-title"><span class="icon">🌡️</span><h2>Temperature Converter</h2></div>
+      <button class="back-btn" onclick="backHome()">← Back</button>
+    </div>
+    <div class="form-row">
+      <label>方向 / Direction</label>
+      <div class="radio-group">
+        <label><input type="radio" name="temp-dir" value="c2f" checked> 摄氏 → 华氏 (C → F)</label>
+        <label><input type="radio" name="temp-dir" value="f2c"> 华氏 → 摄氏 (F → C)</label>
+      </div>
+    </div>
+    <div class="form-row">
+      <label>温度 / Temperature</label>
+      <input type="number" id="temp-input" step="0.1" placeholder="25">
+    </div>
+    <button class="btn-primary" onclick="convertTemp()">转换 / Convert</button>
+    <div class="output" id="temp-output"></div>
+  </div>
+
+  <!-- Tip -->
+  <div id="tip" class="tool-panel">
+    <div class="panel-header">
+      <div class="panel-title"><span class="icon">💵</span><h2>Tip Calculator</h2></div>
+      <button class="back-btn" onclick="backHome()">← Back</button>
+    </div>
+    <div class="form-row">
+      <label>币种 / Currency</label>
+      <select id="tip-currency">
+        <option value="¥">¥ 人民币</option>
+        <option value="$">$ Dollar</option>
+        <option value="€">€ Euro</option>
+        <option value="£">£ Pound</option>
+        <option value="¥J">¥ 円</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>菜品金额（空格分隔）/ Dish prices (space-separated)</label>
+      <input type="text" id="tip-dishes" placeholder="88 45 32">
+      <span class="hint">例如 / e.g.：88 45 32</span>
+    </div>
+    <div class="form-row">
+      <label>小费比例 % / Tip percentage</label>
+      <input type="number" id="tip-rate" min="0" max="100" step="0.1" value="15">
+    </div>
+    <button class="btn-primary" onclick="calcTip()">计算 / Calculate</button>
+    <div class="output" id="tip-output"></div>
+  </div>
+
+  <footer>
+    <p>由 5 个 Python 项目转化而来 · Built from 5 Python scripts · 用 Claude Code 制作</p>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   ROUTER
+   ============================================================ */
+const PANELS = ['home','bmi','greeting','password','temp','tip'];
+function openTool(id) {
+  document.getElementById('home').style.display = 'none';
+  PANELS.forEach(p => {
+    if (p === 'home') return;
+    const el = document.getElementById(p);
+    el.classList.toggle('active', p === id);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function backHome() {
+  document.getElementById('home').style.display = 'grid';
+  PANELS.forEach(p => {
+    if (p === 'home') return;
+    document.getElementById(p).classList.remove('active');
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ============================================================
+   1. BMI CALCULATOR
+   ============================================================ */
+const BMI_STRINGS = {
+  zh: { enter_height:"身高（cm）", enter_weight:"体重（kg）", enter_age:"年龄", enter_gender:"性别",
+        bmi_result:"您的 BMI 为", advice_header:"健康建议",
+        male:"男 / Male", female:"女 / Female",
+        categories:{underweight:"偏瘦", normal:"正常", overweight:"偏重", obese:"肥胖"} },
+  en: { enter_height:"Height (cm)", enter_weight:"Weight (kg)", enter_age:"Age", enter_gender:"Gender",
+        bmi_result:"Your BMI is", advice_header:"Health Advice",
+        male:"Male", female:"Female",
+        categories:{underweight:"Underweight", normal:"Normal", overweight:"Overweight", obese:"Obese"} },
+  ja: { enter_height:"身長（cm）", enter_weight:"体重（kg）", enter_age:"年齢", enter_gender:"性別",
+        bmi_result:"あなたのBMIは", advice_header:"健康アドバイス",
+        male:"男性 / Male", female:"女性 / Female",
+        categories:{underweight:"低体重", normal:"普通体重", overweight:"過体重", obese:"肥満"} },
+  fr: { enter_height:"Taille (cm)", enter_weight:"Poids (kg)", enter_age:"Âge", enter_gender:"Sexe",
+        bmi_result:"Votre IMC est", advice_header:"Conseils Santé",
+        male:"Homme / Male", female:"Femme / Female",
+        categories:{underweight:"Insuffisance pondérale", normal:"Poids normal", overweight:"Surpoids", obese:"Obésité"} },
+};
+const BMI_ADVICE = {
+  zh: {
+    underweight: { base:"您的体重偏低，建议增加营养摄入，规律进食，必要时咨询营养师。",
+      young_male:"青年男性在偏瘦状态下应注重蛋白质和热量摄入，适度力量训练有助于增肌。",
+      young_female:"青年女性偏瘦可能影响荷尔蒙平衡和生育健康，建议均衡饮食，避免过度节食。",
+      middle_male:"中年男性偏瘦需关注肌肉流失问题，建议增加优质蛋白摄入并进行抗阻训练。",
+      middle_female:"中年女性偏瘦会加速骨质流失风险，建议补充钙质和维生素D。",
+      senior:"老年人体重偏低易导致免疫力下降，应少食多餐，注意补充蛋白质。" },
+    normal: { base:"您的体重处于健康范围，继续保持均衡饮食和规律运动。",
+      young_male:"保持现有生活习惯，可适当增加力量训练以塑造体型。",
+      young_female:"维持健康体重，注意补铁和叶酸，每周至少150分钟中等强度运动。",
+      middle_male:"注意控制内脏脂肪，定期体检，保持有氧运动和力量训练的结合。",
+      middle_female:"更年期前后注意激素变化对体重的影响，保持均衡饮食和规律运动。",
+      senior:"保持适度活动，注意补充优质蛋白和钙质，预防肌肉和骨骼老化。" },
+    overweight: { base:"您的体重略微偏高，建议适当控制饮食热量，增加有氧运动。",
+      young_male:"减少精制碳水和高脂食物摄入，每周进行150~300分钟中高强度运动。",
+      young_female:"避免极端节食，通过均衡饮食和运动逐步减重，每周减重不超过0.5kg为宜。",
+      middle_male:"重点关注腰围，腰围超过90cm为腹型肥胖，心血管风险增加，建议就医评估。",
+      middle_female:"注意激素变化导致的腹部脂肪堆积，低糖低脂饮食配合规律运动效果最佳。",
+      senior:"老年人减重需循序渐进，避免肌肉流失，建议在医生指导下制定方案。" },
+    obese: { base:"您的体重已达肥胖范围，建议尽快咨询医生，制定系统的减重计划。",
+      young_male:"肥胖显著增加代谢综合征风险，建议进行血糖、血压、血脂检查。",
+      young_female:"肥胖可能影响内分泌和生育能力，建议就医评估。",
+      middle_male:"心血管疾病和2型糖尿病风险极高，需立即就医并进行全面代谢评估。",
+      middle_female:"肥胖叠加更年期激素变化风险倍增，请及时就医，进行综合干预。",
+      senior:"老年肥胖增加关节负担和心脑血管风险，请在医生监督下进行减重治疗。" },
+  },
+  en: {
+    underweight: { base:"Your weight is below the healthy range. Consider increasing caloric intake.",
+      young_male:"Focus on protein and caloric intake. Resistance training helps build healthy muscle mass.",
+      young_female:"Low weight may disrupt hormonal balance. Aim for a balanced diet — no extreme restrictions.",
+      middle_male:"Watch for muscle loss. Prioritize quality protein and resistance training.",
+      middle_female:"Low weight accelerates bone density loss. Supplement calcium and vitamin D.",
+      senior:"Low weight weakens immunity. Eat smaller, more frequent meals with emphasis on protein." },
+    normal: { base:"Your weight is in the healthy range. Keep up the balanced diet and regular exercise.",
+      young_male:"Maintain your habits. Strength training helps improve body composition.",
+      young_female:"Maintain a balanced diet with adequate iron and folate. Aim for 150+ min/week activity.",
+      middle_male:"Watch visceral fat. Combine aerobic + resistance exercise. Get regular check-ups.",
+      middle_female:"Be mindful of menopausal hormonal changes. Balanced diet + exercise stay key.",
+      senior:"Stay moderately active. Prioritize protein and calcium to prevent muscle and bone loss." },
+    overweight: { base:"Your weight is slightly above healthy range. Reduce calories, more aerobic exercise.",
+      young_male:"Cut refined carbs and high-fat foods. Aim for 150-300 min/week of exercise.",
+      young_female:"Avoid crash diets. Lose weight gradually — no more than 0.5 kg/week.",
+      middle_male:"Focus on waist. Waist > 90 cm = abdominal obesity with elevated cardiovascular risk.",
+      middle_female:"Hormonal shifts can cause abdominal fat. Low-sugar, low-fat diet helps most.",
+      senior:"Weight loss should be gradual to avoid muscle loss. Work with a physician." },
+    obese: { base:"Your BMI is in obese range. Please consult a doctor to develop a structured plan.",
+      young_male:"Obesity raises metabolic syndrome risk. Get bloodwork done with professional guidance.",
+      young_female:"Obesity can impair hormonal health and fertility. Seek medical evaluation.",
+      middle_male:"Cardiovascular and type 2 diabetes risk is very high. Seek immediate assessment.",
+      middle_female:"Obesity + menopause compounds risks. Comprehensive medical intervention is needed.",
+      senior:"Obesity stresses joints and cardiovascular system. Work closely with your doctor." },
+  },
+  ja: {
+    underweight: { base:"体重が健康範囲を下回っています。栄養摂取を増やしてください。",
+      young_male:"タンパク質と総カロリーの摂取を増やし、筋力トレーニングで筋肉量を高めましょう。",
+      young_female:"低体重はホルモンバランスを乱す可能性。極端な食事制限は避けてください。",
+      middle_male:"筋肉の減少に注意し、良質なタンパク質と抵抗運動を組み合わせましょう。",
+      middle_female:"骨密度低下が加速します。カルシウムとビタミンDを補充しましょう。",
+      senior:"免疫力が低下しやすいです。少量頻回食でタンパク質を意識して。" },
+    normal: { base:"体重は健康的な範囲内です。バランスの良い食事と定期的な運動を続けましょう。",
+      young_male:"現在の生活習慣を維持しつつ、筋力トレーニングを取り入れましょう。",
+      young_female:"鉄分と葉酸を意識した食事を続け、週150分以上の中強度運動を目標に。",
+      middle_male:"内臓脂肪に注意し、有酸素運動と筋力トレーニングを組み合わせて。",
+      middle_female:"更年期前後のホルモン変化に注意し、バランスの良い食事と運動を維持。",
+      senior:"適度な活動を続け、タンパク質とカルシウムで筋骨格の老化を予防。" },
+    overweight: { base:"体重がやや高めです。食事のカロリーを抑え、有酸素運動を増やしましょう。",
+      young_male:"精製炭水化物と高脂肪食品を減らし、週150〜300分の中〜高強度運動を。",
+      young_female:"極端なダイエットは避け、週0.5kg以内を目安に緩やかに体重を減らしましょう。",
+      middle_male:"腹囲90cm超は腹部肥満で心血管リスクが上昇します。",
+      middle_female:"ホルモン変化による腹部脂肪に注意。低糖・低脂肪食と運動が効果的。",
+      senior:"筋肉量を維持しながら緩やかに減量しましょう。医師との連携を推奨。" },
+    obese: { base:"BMIが肥満の範囲です。早急に医師に相談してください。",
+      young_male:"メタボリックシンドロームのリスクが高まっています。血液検査を。",
+      young_female:"肥満はホルモンや生殖機能に影響する可能性。医師・栄養士のサポートを。",
+      middle_male:"心血管疾患と2型糖尿病のリスクが非常に高いです。直ちに受診を。",
+      middle_female:"肥満と更年期の複合リスクは大きいです。包括的な医療介入が必要。",
+      senior:"肥満は関節と心血管系に大きな負担をかけます。医師の監督のもとで安全に。" },
+  },
+  fr: {
+    underweight: { base:"Votre poids est en dessous de la plage saine. Augmentez vos apports nutritifs.",
+      young_male:"Augmentez les apports en protéines et en calories. La musculation aide.",
+      young_female:"Un faible poids peut perturber l'équilibre hormonal. Évitez les restrictions extrêmes.",
+      middle_male:"Surveillez la perte musculaire. Privilégiez protéines de qualité et musculation.",
+      middle_female:"La faible corpulence accélère la perte osseuse. Supplémentez calcium et vitamine D.",
+      senior:"Un faible poids affaiblit l'immunité. Mangez en petites quantités fréquentes." },
+    normal: { base:"Votre poids est dans la plage saine. Continuez alimentation équilibrée et activité régulière.",
+      young_male:"Maintenez vos habitudes. La musculation peut améliorer votre composition corporelle.",
+      young_female:"Veillez à un apport en fer et folates. Visez 150 min/semaine d'activité modérée.",
+      middle_male:"Surveillez la graisse viscérale. Combinez aérobie et musculation, bilans réguliers.",
+      middle_female:"Soyez attentive aux changements hormonaux. Alimentation équilibrée et exercice essentiels.",
+      senior:"Restez modérément actif(ve). Privilégiez protéines et calcium." },
+    overweight: { base:"Votre poids est légèrement au-dessus. Réduisez calories, augmentez l'exercice aérobie.",
+      young_male:"Réduisez les glucides raffinés. Visez 150-300 min/semaine d'exercice.",
+      young_female:"Évitez les régimes draconiens. Pas plus de 0,5 kg par semaine.",
+      middle_male:"Tour de taille > 90 cm = obésité abdominale à risque cardiovasculaire.",
+      middle_female:"Les changements hormonaux favorisent la graisse abdominale.",
+      senior:"Perdez du poids progressivement pour éviter la fonte musculaire." },
+    obese: { base:"Votre IMC est dans la plage obésité. Consultez un médecin rapidement.",
+      young_male:"L'obésité augmente le risque de syndrome métabolique. Bilan sanguin recommandé.",
+      young_female:"L'obésité peut affecter la santé hormonale et la fertilité.",
+      middle_male:"Risque de maladie cardiovasculaire et de diabète très élevé.",
+      middle_female:"L'obésité combinée à la ménopause multiplie les risques.",
+      senior:"L'obésité sollicite les articulations et le système cardiovasculaire." },
+  },
+};
+let bmiLang = 'zh';
+
+function setupBMILangs() {
+  const langs = [{k:'zh',n:'中文'},{k:'en',n:'English'},{k:'ja',n:'日本語'},{k:'fr',n:'Français'}];
+  const wrap = document.getElementById('bmi-langs');
+  wrap.innerHTML = '';
+  langs.forEach(l => {
+    const b = document.createElement('button');
+    b.className = 'lang-btn' + (l.k === bmiLang ? ' active' : '');
+    b.textContent = l.n;
+    b.onclick = () => { bmiLang = l.k; setupBMILangs(); applyBMILang(); };
+    wrap.appendChild(b);
+  });
+}
+function applyBMILang() {
+  const s = BMI_STRINGS[bmiLang];
+  document.querySelectorAll('#bmi [data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (s[key]) el.textContent = s[key];
+  });
+  document.querySelector('#bmi .g-male').textContent = s.male;
+  document.querySelector('#bmi .g-female').textContent = s.female;
+}
+function bmiCategory(bmi) {
+  if (bmi < 18.5) return 'underweight';
+  if (bmi < 25.0) return 'normal';
+  if (bmi < 30.0) return 'overweight';
+  return 'obese';
+}
+function ageGroup(age, gender) {
+  if (age < 40) return gender === 'male' ? 'young_male' : 'young_female';
+  if (age < 65) return gender === 'male' ? 'middle_male' : 'middle_female';
+  return 'senior';
+}
+function calcBMI() {
+  const out = document.getElementById('bmi-output');
+  out.classList.remove('success', 'error');
+  const h = parseFloat(document.getElementById('bmi-height').value);
+  const w = parseFloat(document.getElementById('bmi-weight').value);
+  const a = parseInt(document.getElementById('bmi-age').value);
+  const g = document.querySelector('input[name="bmi-gender"]:checked').value;
+  if (!h || !w || !a || h <= 0 || w <= 0 || a <= 0) {
+    out.classList.add('active', 'error');
+    out.textContent = '⚠️ 请填写有效的身高、体重和年龄 / Please enter valid height, weight, and age.';
+    return;
+  }
+  const bmi = w / Math.pow(h/100, 2);
+  const cat = bmiCategory(bmi);
+  const s = BMI_STRINGS[bmiLang];
+  const advice = BMI_ADVICE[bmiLang][cat];
+  const ag = ageGroup(a, g);
+  out.classList.add('active', 'success');
+  out.innerHTML =
+    `<span class="big">${s.bmi_result}: ${bmi.toFixed(1)} <span class="tag ${cat}">${s.categories[cat]}</span></span>` +
+    `<strong>── ${s.advice_header} ──</strong>\n` +
+    `• ${advice.base}\n` +
+    `• ${advice[ag]}`;
+}
+
+/* ============================================================
+   2. PERSONALIZED GREETINGS
+   ============================================================ */
+const GREET_LANGS = {
+  zh: {
+    name: "中文", title: "欢迎来到个性化问候语生成器！",
+    name_label: "名字", age_label: "年龄",
+    empty_name_err: "名字不能为空哦，再试一次！",
+    invalid_age_err: "请输入一个合理的年龄数字！",
+    openers: ["嘿，{name}！","{name}，你来了！","哇，是{name}！","{name}，今天真是个好日子！"],
+    emotional: [
+      "哇，好高兴认识你，{name}！你知道吗，每遇见一个新朋友，我都觉得世界变得更温暖了一点。你的人生，一定有着只属于你的故事和光芒——而今天，我很幸运能认识你。",
+      "嘿，{name}，好高兴你来了！说真的，每次遇见一个新的人，我心里都会有一种小小的感动。你的笑容、你的故事、你走过的每一步路，都是这个世界上独一无二的存在。",
+      "Nice to meet you，{name}！遇见你真的让我很开心。人与人之间的相遇，有时候就是最美丽的奇迹。你的故事，你的喜怒哀乐，我相信都值得被认真对待。能在今天认识你，是一份礼物。",
+    ],
+    age_groups: [
+      [10,["你是世界上最可爱的小天才！","你的笑容能让整个宇宙都亮起来！","你每天都在创造奇迹，你知道吗？"],"🌟✨🦄"],
+      [18,["你正处于人生最酷的阶段，未来全是你的！","你身上有一种能量，让周围的人都忍不住微笑。","你比你想象的更有才华，世界正在等着你！"],"🔥💫🎸"],
+      [30,["你正在书写一个精彩绝伦的故事，主角就是你！","你的热情和活力是这个世界上最宝贵的礼物。","你已经比 20 岁的自己更聪明、更有趣了——而且还在进化！"],"🚀🌈💡"],
+      [50,["你积累的智慧和经验，是任何人都羡慕不来的。","你就像一瓶好酒，越陈越香，越来越迷人！","你的人生经历让你拥有了一种特别的从容与魅力。"],"🍷✨🌺"],
+      [200,["你是用岁月酿造的传奇，每一道皱纹都是故事。","你的智慧和优雅是这个世界上最稀缺的财富。","你证明了，真正的光芒只会随时间越来越耀眼！"],"👑🌟🎖️"],
+    ],
+    closers: ["今天一定会是美好的一天，因为有你在。","记住，你随时都可以让别人的一天变得更美好。","去吧，去把这份好心情传递给每一个人！","带着这份能量出发，今天的世界因你而不同！"],
+  },
+  en: {
+    name:"English", title:"Welcome to the Personalized Greeting Generator!",
+    name_label:"Name", age_label:"Age",
+    empty_name_err:"Name can't be empty — give it another try!",
+    invalid_age_err:"Please enter a valid age number!",
+    openers:["Hey, {name}!","{name}, you're here!","Oh wow, it's {name}!","{name}, today just got so much better!"],
+    emotional:[
+      "Wow, I'm so genuinely happy to meet you, {name}! You know, every time I get to know someone new, I feel like the world becomes a little warmer and a little more full of possibility. Your life holds stories, moments, and a kind of light that's entirely your own — and today, I'm lucky to have crossed paths with you.",
+      "Hey, {name} — I'm really glad you're here! Honestly, every time I meet someone new, there's this small, beautiful feeling that rises up in me. The journey you've walked, the things you've laughed at, every version of you that got you here — it all adds up to someone truly irreplaceable.",
+      "Nice to meet you, {name}! Meeting you genuinely makes me happy. Sometimes a new meeting is the most beautiful kind of miracle. Your story, your emotions, everything you've been through — it all deserves to be taken seriously.",
+    ],
+    age_groups:[
+      [10,["You are the most wonderfully curious little genius!","Your smile has the power to light up the entire universe!","You're creating tiny miracles every single day — did you know that?"],"🌟✨🦄"],
+      [18,["You're in the coolest phase of life, and the whole future belongs to you!","There's an energy about you that makes everyone smile.","You're more talented than you realize — the world is waiting for you!"],"🔥💫🎸"],
+      [30,["You're writing the most thrilling story right now, and you're the hero!","Your passion and energy are the most precious gifts in this world.","You're already smarter and more interesting than your younger self!"],"🚀🌈💡"],
+      [50,["The wisdom and experience you've gathered is something anyone would envy.","You're like a fine wine — more layered, more refined, more captivating!","Your life has given you a rare kind of grace and magnetism."],"🍷✨🌺"],
+      [200,["You are a legend forged by years lived fully — every line tells a story.","Your wisdom and elegance are among the rarest treasures in this world.","You've proven that true brilliance only grows brighter with time!"],"👑🌟🎖️"],
+    ],
+    closers:["Today is going to be a wonderful day — because you're in it.","Remember, you have the power to brighten someone's day at any moment.","Go spread this good energy to everyone you meet today!","Carry this with you — today, the world is different because of you!"],
+  },
+  ja: {
+    name:"日本語", title:"パーソナライズ挨拶ジェネレーターへようこそ！",
+    name_label:"お名前", age_label:"年齢",
+    empty_name_err:"名前を入力してください！もう一度どうぞ。",
+    invalid_age_err:"正しい年齢を入力してください！",
+    openers:["やあ、{name}さん！","{name}さん、来てくれたんですね！","わあ、{name}さんだ！","{name}さん、今日は本当にいい日ですね！"],
+    emotional:[
+      "わあ、{name}さん、お会いできてとても嬉しいです！新しい人に出会うたびに、世界が少し広くなって、少し温かくなる気がします。",
+      "{name}さん、来てくれてありがとう！正直に言うと、新しい人に会うたびに、心の中に小さな感動が生まれます。",
+      "{name}さん、お会いできて光栄です！新しい出会いって、時には奇跡みたいなものだと思いませんか？",
+    ],
+    age_groups:[
+      [10,["あなたは世界一かわいい天才さん！","あなたの笑顔は宇宙全体を明るくする力があるよ！","毎日奇跡を起こしているって気づいてる？"],"🌟✨🦄"],
+      [18,["人生で一番カッコいい時期を生きてるよ！","あなたにはオーラがあって、周りの人が自然と笑顔になる。","自分が思っているより、ずっと才能があるよ！"],"🔥💫🎸"],
+      [30,["最高に面白い物語を書いている最中——主人公はあなた！","あなたの情熱とエネルギーは、この世界で一番大切なプレゼント。","昔の自分よりも、もうずっと賢くて面白くなってる！"],"🚀🌈💡"],
+      [50,["あなたが積み重ねてきた知恵と経験は、誰もが羨む宝物。","あなたはまるで良いワイン——時間が経つほど深みが増す！","これまでの人生が、特別な落ち着きと魅力を与えてくれた。"],"🍷✨🌺"],
+      [200,["あなたは年月が醸し出した伝説——一つひとつのシワに物語が宿っている。","あなたの知恵と優雅さは、この世界で最も希少な宝。","本物の輝きは、時間とともに増すもの。"],"👑🌟🎖️"],
+    ],
+    closers:["あなたがいるから、今日は素晴らしい一日になる。","あなたはいつでも誰かの一日を明るくできる。","この良い気持ちを、出会う人みんなに伝えに行って！","このエネルギーを持って出発しよう！"],
+  },
+  fr: {
+    name:"Français", title:"Bienvenue dans le Générateur de Salutations Personnalisées !",
+    name_label:"Prénom", age_label:"Âge",
+    empty_name_err:"Le prénom ne peut pas être vide — réessaie !",
+    invalid_age_err:"Veuillez entrer un âge valide !",
+    openers:["Hé, {name} !","{name}, te voilà !","Oh, c'est {name} !","{name}, aujourd'hui est vraiment une belle journée !"],
+    emotional:[
+      "Oh là là, {name}, quelle joie de te rencontrer ! Tu sais, chaque fois que je fais la connaissance de quelqu'un de nouveau, j'ai le sentiment que le monde devient un peu plus chaleureux.",
+      "Hé, {name}, je suis vraiment content(e) que tu sois là ! Honnêtement, chaque nouvelle rencontre fait naître en moi une petite émotion toute douce.",
+      "Enchanté(e) de te rencontrer, {name} ! Les nouvelles rencontres, c'est parfois le plus beau des miracles.",
+    ],
+    age_groups:[
+      [10,["Tu es le petit génie le plus adorable du monde entier !","Ton sourire a le pouvoir d'illuminer tout l'univers !","Tu crées des petits miracles chaque jour !"],"🌟✨🦄"],
+      [18,["Tu vis la période la plus cool de ta vie !","Il y a une énergie en toi qui fait sourire tout le monde.","Tu es plus talentueux(se) que tu ne le crois !"],"🔥💫🎸"],
+      [30,["Tu écris l'histoire la plus palpitante qui soit, et tu en es le héros !","Ta passion et ton énergie sont les cadeaux les plus précieux.","Tu es déjà plus intelligent(e) qu'avant — et tu continues d'évoluer !"],"🚀🌈💡"],
+      [50,["La sagesse et l'expérience que tu as accumulées font l'envie de tous.","Tu es comme un bon vin — plus le temps passe, plus tu te révèles !","La vie t'a donné une élégance et un charme rares."],"🍷✨🌺"],
+      [200,["Tu es une légende forgée par les années — chaque ride est une histoire.","Ta sagesse et ton élégance sont parmi les trésors les plus rares.","Tu as prouvé que la vraie lumière grandit avec le temps !"],"👑🌟🎖️"],
+    ],
+    closers:["Aujourd'hui va être une magnifique journée — parce que tu y es.","Rappelle-toi que tu peux illuminer la journée de quelqu'un.","Vas-y, partage cette bonne humeur avec tous !","Pars avec cette énergie — le monde est différent grâce à toi !"],
+  },
+};
+let greetLang = 'zh';
+function setupGreetLangs() {
+  const wrap = document.getElementById('greet-langs');
+  wrap.innerHTML = '';
+  Object.entries(GREET_LANGS).forEach(([k,v]) => {
+    const b = document.createElement('button');
+    b.className = 'lang-btn' + (k === greetLang ? ' active' : '');
+    b.textContent = v.name;
+    b.onclick = () => { greetLang = k; setupGreetLangs(); applyGreetLang(); };
+    wrap.appendChild(b);
+  });
+}
+function applyGreetLang() {
+  const L = GREET_LANGS[greetLang];
+  document.getElementById('greet-name-label').textContent = L.name_label;
+  document.getElementById('greet-age-label').textContent = L.age_label;
+}
+function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+function getAgeVibe(L, age) {
+  for (const [maxAge, comps, emoji] of L.age_groups) {
+    if (age < maxAge) return [pick(comps), emoji];
+  }
+  const last = L.age_groups[L.age_groups.length - 1];
+  return [pick(last[1]), last[2]];
+}
+function generateGreeting() {
+  const out = document.getElementById('greet-output');
+  out.classList.remove('success', 'error');
+  const L = GREET_LANGS[greetLang];
+  const name = document.getElementById('greet-name').value.trim();
+  const ageRaw = document.getElementById('greet-age').value.trim();
+  if (!name) {
+    out.classList.add('active', 'error'); out.textContent = '⚠️ ' + L.empty_name_err; return;
+  }
+  const age = parseInt(ageRaw);
+  if (isNaN(age) || age < 0 || age > 150) {
+    out.classList.add('active', 'error'); out.textContent = '⚠️ ' + L.invalid_age_err; return;
+  }
+  const [compliment, emoji] = getAgeVibe(L, age);
+  const opener = pick(L.openers).replaceAll('{name}', name);
+  const emotional = pick(L.emotional).replaceAll('{name}', name);
+  const closer = pick(L.closers);
+  out.classList.add('active', 'success');
+  out.textContent = `${emoji} ${opener}\n\n${emotional}\n\n${compliment}\n\n${closer}\n${emoji}`;
+}
+
+/* ============================================================
+   3. PASSWORD GENERATOR
+   ============================================================ */
+const PW_SYMBOLS = "!@#$%^&*-_=+";
+function rand(s) { return s[Math.floor(Math.random() * s.length)]; }
+function shuffle(a) { for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function genPassword() {
+  const out = document.getElementById('pw-output');
+  out.classList.remove('success', 'error');
+  const len = parseInt(document.getElementById('pw-length').value);
+  if (isNaN(len) || len < 5) {
+    out.classList.add('active', 'error');
+    out.textContent = '⚠️ 密码长度至少需要 5 位 / Password must be at least 5 characters.';
+    return;
+  }
+  if (len > 128) {
+    out.classList.add('active', 'error');
+    out.textContent = '⚠️ 密码长度不能超过 128 / Maximum 128 characters.';
+    return;
+  }
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const digits = "0123456789";
+  const required = [rand(upper), rand(lower), rand(digits), rand(PW_SYMBOLS)];
+  const pool = upper + lower + digits + PW_SYMBOLS;
+  const middle = [];
+  for (let i = 0; i < len - 5; i++) middle.push(rand(pool));
+  const lastSymbol = rand(PW_SYMBOLS);
+  const chars = shuffle(required.concat(middle));
+  chars.push(lastSymbol);
+  const pw = chars.join('');
+  out.classList.add('active', 'success');
+  out.innerHTML = `<span class="password-display" id="pw-text">${pw}</span><button class="copy-btn" onclick="copyPw()">📋 Copy</button>`;
+}
+function copyPw() {
+  const t = document.getElementById('pw-text').textContent;
+  navigator.clipboard.writeText(t).then(() => {
+    const b = document.querySelector('#pw-output .copy-btn');
+    const orig = b.textContent;
+    b.textContent = '✓ Copied!';
+    setTimeout(() => b.textContent = orig, 1500);
+  });
+}
+
+/* ============================================================
+   4. TEMPERATURE CONVERTER
+   ============================================================ */
+function convertTemp() {
+  const out = document.getElementById('temp-output');
+  out.classList.remove('success', 'error');
+  const dir = document.querySelector('input[name="temp-dir"]:checked').value;
+  const v = parseFloat(document.getElementById('temp-input').value);
+  if (isNaN(v)) {
+    out.classList.add('active', 'error');
+    out.textContent = '⚠️ 请输入有效的温度数值 / Please enter a valid number.';
+    return;
+  }
+  let result, celsius;
+  if (dir === 'c2f') {
+    celsius = v;
+    result = `${v}°C = ${(v * 9/5 + 32).toFixed(2)}°F`;
+  } else {
+    celsius = (v - 32) * 5/9;
+    result = `${v}°F = ${celsius.toFixed(2)}°C`;
+  }
+  let advice = '';
+  if (celsius <= 10) advice = '\n\n❄️ 提醒：天气寒冷，记得多穿衣服！\n   It\'s cold outside, dress warmly!';
+  else if (celsius >= 35) advice = '\n\n🔥 提醒：天气炎热，记得多喝水！\n   It\'s hot outside, stay hydrated!';
+  out.classList.add('active', 'success');
+  out.innerHTML = `<span class="big">${result}</span>${advice}`;
+}
+
+/* ============================================================
+   5. TIP CALCULATOR
+   ============================================================ */
+function calcTip() {
+  const out = document.getElementById('tip-output');
+  out.classList.remove('success', 'error');
+  let cur = document.getElementById('tip-currency').value;
+  if (cur === '¥J') cur = '¥';
+  const raw = document.getElementById('tip-dishes').value.trim();
+  const rate = parseFloat(document.getElementById('tip-rate').value);
+  if (!raw) {
+    out.classList.add('active', 'error');
+    out.textContent = '⚠️ 请至少输入一个菜品金额 / Please enter at least one dish price.'; return;
+  }
+  if (isNaN(rate) || rate < 0) {
+    out.classList.add('active', 'error');
+    out.textContent = '⚠️ 小费比例无效 / Invalid tip percentage.'; return;
+  }
+  const parts = raw.split(/\s+/);
+  const dishes = [];
+  for (const p of parts) {
+    const v = parseFloat(p);
+    if (isNaN(v) || v < 0) {
+      out.classList.add('active', 'error');
+      out.textContent = `⚠️ 无效的金额: "${p}" / Invalid amount.`; return;
+    }
+    dishes.push(v);
+  }
+  const meal = dishes.reduce((a,b) => a+b, 0);
+  const tip = meal * rate / 100;
+  const total = meal + tip;
+  let lines = '========== 账单明细 / Bill Summary ==========\n';
+  dishes.forEach((d, i) => { lines += `  第 ${i+1} 道 / Dish ${i+1}: ${cur}${d.toFixed(2)}\n`; });
+  lines += '──────────────────────────────────────\n';
+  lines += `  餐费合计 / Subtotal: ${cur}${meal.toFixed(2)}\n`;
+  lines += `  小费 / Tip (${rate}%): ${cur}${tip.toFixed(2)}\n`;
+  lines += '──────────────────────────────────────\n';
+  out.classList.add('active', 'success');
+  out.innerHTML = lines + `<span class="big">  应付总金额 / Total: ${cur}${total.toFixed(2)}</span>=========================================`;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+setupBMILangs();
+applyBMILang();
+setupGreetLangs();
+applyGreetLang();
+</script>
+</body>
+</html>
